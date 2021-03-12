@@ -52,14 +52,14 @@ public class DummyCardRepo {
 
     public CardUsageStatistics getStat(int start, int limit){
         CardUsageStatistics stat = new CardUsageStatistics();
-        Map<String, Long> collect = logs.stream().collect(Collectors.groupingBy(CardLog::getCardNumber, Collectors.counting()));
-        Map<String, Long> map = collect.entrySet().stream().skip(start - 1).limit(limit).flatMap(Stream::of)
+        Map<String, Long> summaryStat = logs.stream().collect(Collectors.groupingBy(CardLog::getCardNumber, Collectors.counting()));
+        Map<String, Long> map = summaryStat.entrySet().stream().skip(start - 1).limit(limit).flatMap(Stream::of)
                 .collect(Collectors.toMap(m -> (m.getKey().substring(0,3)+m.getKey().substring(m.getKey().length()-3)), Map.Entry::getValue));
         Payload payload = new Payload();
         payload.setRecord((HashMap<String, Long>) map);
         stat.setPayload((HashMap<String, Long>) map);
         stat.setLimit(limit);
-        stat.setSize(logs.size());
+        stat.setSize(summaryStat.size());
         stat.setStart(start);
         stat.setSuccess(true);
         return stat;
